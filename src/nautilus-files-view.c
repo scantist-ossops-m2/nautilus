@@ -7587,10 +7587,11 @@ nautilus_handles_all_files_to_extract (GList *files)
 static void
 real_update_actions_state (NautilusFilesView *view)
 {
-    NautilusFilesViewPrivate *priv;
+    NautilusFilesViewPrivate *priv = nautilus_files_view_get_instance_private (view);
     g_autolist (NautilusFile) selection = NULL;
     GList *l;
     gint selection_count;
+    gboolean is_network_view = NAUTILUS_IS_NETWORK_VIEW (priv->list_base);
     gboolean selection_contains_home_dir;
     gboolean selection_contains_recent;
     gboolean selection_contains_search;
@@ -7625,8 +7626,6 @@ real_update_actions_state (NautilusFilesView *view)
     gboolean show_star;
     gboolean show_unstar;
     g_autoptr (GAppInfo) app_info_mailto = NULL;
-
-    priv = nautilus_files_view_get_instance_private (view);
 
     view_action_group = priv->view_action_group;
 
@@ -7836,7 +7835,8 @@ real_update_actions_state (NautilusFilesView *view)
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action),
                                  !selection_contains_recent &&
                                  !selection_contains_search &&
-                                 !selection_contains_starred);
+                                 !selection_contains_starred &&
+                                 !is_network_view);
 
     /* Drive menu */
     show_mount = (selection != NULL);
@@ -7908,7 +7908,8 @@ real_update_actions_state (NautilusFilesView *view)
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action),
                                  !selection_contains_recent &&
                                  !selection_contains_search &&
-                                 !selection_contains_starred);
+                                 !selection_contains_starred &&
+                                 !is_network_view);
     action = g_action_map_lookup_action (G_ACTION_MAP (view_action_group),
                                          "new-folder");
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action), can_create_files);
@@ -7950,16 +7951,20 @@ real_update_actions_state (NautilusFilesView *view)
     action = g_action_map_lookup_action (G_ACTION_MAP (view_action_group),
                                          "properties");
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action),
-                                 selection_count != 0 ||
-                                 (!selection_contains_recent &&
-                                  !selection_contains_search &&
-                                  !selection_contains_starred));
+                                 (is_network_view ?
+                                  (selection_count == 1 &&
+                                   nautilus_file_can_unmount (selection->data)) :
+                                  (selection_count != 0 ||
+                                   (!selection_contains_recent &&
+                                    !selection_contains_search &&
+                                    !selection_contains_starred))));
     action = g_action_map_lookup_action (G_ACTION_MAP (view_action_group),
                                          "current-directory-properties");
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action),
                                  !selection_contains_recent &&
                                  !selection_contains_search &&
-                                 !selection_contains_starred);
+                                 !selection_contains_starred &&
+                                 !is_network_view);
 
     /* Actions that are related to the clipboard need request, request the data
      * and update them once we have the data */
@@ -8023,7 +8028,6 @@ real_update_actions_state (NautilusFilesView *view)
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action), show_unstar && selection_contains_starred);
 
     /* Network view actions */
-    gboolean is_network_view = NAUTILUS_IS_NETWORK_VIEW (priv->list_base);
     gboolean can_remove_recent_server = is_network_view;
 
     for (l = selection; l != NULL && can_remove_recent_server; l = l->next)
