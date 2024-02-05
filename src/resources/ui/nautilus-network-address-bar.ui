@@ -91,7 +91,7 @@
         <property name="input-hints">no-spellcheck | no-emoji</property>
         <property name="width-chars">10</property>
         <property name="max-width-chars">34</property>
-        <property name="placeholder-text" translatable="yes">Network address…</property>
+        <property name="placeholder-text" translatable="yes">Enter Network address…</property>
         <signal name="notify::text" handler="on_address_entry_text_changed" object="NautilusNetworkAddressBar" swapped="yes"/>
         <signal name="activate" handler="on_connect_button_clicked" object="NautilusNetworkAddressBar" swapped="yes"/>
       </object>
