@@ -1860,7 +1860,8 @@ call_ready_callbacks (NautilusDirectory *directory)
     {
         unsatisfied_list = values->pdata[i];
         for (node = values->pdata[i]; node != NULL; node = next)
-        {            next = node->next;
+        {
+            next = node->next;
             ReadyCallback *callback = node->data;
             if (request_is_satisfied (directory, callback->file, callback->request))
             {
