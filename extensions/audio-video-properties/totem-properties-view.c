@@ -34,6 +34,7 @@ struct TotemPropertiesViewPriv
     NautilusPropertiesModel *model;
     GListStore *store;
     GstDiscoverer *disco;
+    gboolean discoverer_started;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -441,7 +442,7 @@ totem_properties_view_set_location (TotemPropertiesView *props,
 {
     g_assert (TOTEM_IS_PROPERTIES_VIEW (props));
 
-    if (props->priv->disco)
+    if (props->priv->discoverer_started)
     {
         gst_discoverer_stop (props->priv->disco);
     }
@@ -449,6 +450,7 @@ totem_properties_view_set_location (TotemPropertiesView *props,
     if (location != NULL && props->priv->disco != NULL)
     {
         gst_discoverer_start (props->priv->disco);
+        props->priv->discoverer_started = TRUE;
 
         if (gst_discoverer_discover_uri_async (props->priv->disco, location) == FALSE)
         {
