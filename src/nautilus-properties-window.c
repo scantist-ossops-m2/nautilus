@@ -197,6 +197,7 @@ struct _NautilusPropertiesWindow
     guint long_operation_underway;
 
     GList *changed_files;
+    GListStore *extensions_list;
 };
 
 typedef enum
@@ -3543,7 +3544,7 @@ setup_permissions_page (NautilusPropertiesWindow *self)
 static void
 refresh_extension_model_pages (NautilusPropertiesWindow *self)
 {
-    g_autoptr (GListStore) extensions_list = g_list_store_new (NAUTILUS_TYPE_PROPERTIES_MODEL);
+    GListStore *extensions_list = g_list_store_new (NAUTILUS_TYPE_PROPERTIES_MODEL);
     g_autolist (NautilusPropertiesModel) all_models = NULL;
     g_autolist (GObject) providers =
         nautilus_module_get_extensions_for_type (NAUTILUS_TYPE_PROPERTIES_MODEL_PROVIDER);
@@ -3568,6 +3569,8 @@ refresh_extension_model_pages (NautilusPropertiesWindow *self)
                              (GtkListBoxCreateWidgetFunc) add_extension_model_page,
                              self,
                              NULL);
+    g_clear_object (&self->extensions_list);
+    self->extensions_list = extensions_list;
 }
 
 static gboolean
@@ -3993,6 +3996,7 @@ real_finalize (GObject *object)
 
     g_free (self->mime_type);
     g_free (self->device_identifier);
+    g_clear_object (&self->extensions_list);
 
     G_OBJECT_CLASS (nautilus_properties_window_parent_class)->finalize (object);
 }
