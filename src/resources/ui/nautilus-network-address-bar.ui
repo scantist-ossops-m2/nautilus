@@ -87,6 +87,8 @@
     </style>
     <child>
       <object class="GtkEntry" id="address_entry">
+        <property name="input-purpose">url</property>
+        <property name="input-hints">no-spellcheck | no-emoji</property>
         <property name="width-chars">10</property>
         <property name="max-width-chars">34</property>
         <property name="placeholder-text" translatable="yes">Network address…</property>
