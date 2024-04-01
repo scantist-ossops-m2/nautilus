@@ -344,8 +344,7 @@ create_view_ui (NautilusNetworkView *self)
     gtk_list_view_set_tab_behavior (list_view, GTK_LIST_TAB_ITEM);
 
     /* While we don't want to use GTK's click activation, we'll let it handle
-     * the key activation part (with Enter).
-     */
+     * the key activation part (with Enter). */
     g_signal_connect (list_view, "activate", G_CALLBACK (on_list_view_item_activated), self);
 
     return list_view;
